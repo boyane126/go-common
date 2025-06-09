@@ -34,6 +34,14 @@ func NewGormLogger() GormLogger {
 	}
 }
 
+// NewGormLoggerWithConfig 创建具有指定配置的GORM日志记录器
+func NewGormLoggerWithConfig(level gormlogger.LogLevel, slowThreshold time.Duration) GormLogger {
+	return GormLogger{
+		ZapLogger:     Logger,
+		SlowThreshold: slowThreshold,
+	}.LogMode(level).(GormLogger)
+}
+
 // LogMode 实现 gormlogger.Interface 的 LogMode 方法
 func (l GormLogger) LogMode(level gormlogger.LogLevel) gormlogger.Interface {
 	return GormLogger{
@@ -85,8 +93,8 @@ func (l GormLogger) Trace(ctx context.Context, begin time.Time, fc func() (sql s
 		l.logger().Warn("Database Slow Log", logFields...)
 	}
 
-	// 记录所有 SQL 请求
-	l.logger().Debug("Database Query", logFields...)
+	// 记录所有 SQL 请求 - 注释掉以减少日志输出
+	// l.logger().Debug("Database Query", logFields...)
 }
 
 // logger 内部的辅助方法，确保 Zap 内置信息 Caller 的准确性（如 paginator/paginator.go:148）
